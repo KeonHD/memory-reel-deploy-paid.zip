@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memory Reel — Father's Day</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=EB+Garamond:ital,wght@1,400;1,500&family=Noto+Sans+Malayalam:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-void:#0B0A08;
+    --bg-charcoal:#171310;
+    --cream:#EDE3D0;
+    --amber:#E8A33D;
+    --rust:#8C3B2E;
+    --gold:#D9B26A;
+    --muted:#9A8F7C;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg-void);
+    font-family:'Noto Sans Malayalam','Noto Sans',sans-serif;
+    color:var(--cream);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:32px 16px 64px;
+    position:relative;
+    overflow-x:hidden;
+  }
+  .grain{
+    position:fixed; inset:0; pointer-events:none; z-index:5;
+    opacity:0.05; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation:flicker 6s infinite;
+  }
+  @keyframes flicker{0%,100%{opacity:0.04;}50%{opacity:0.07;}}
+  @media (prefers-reduced-motion: reduce){ .grain{animation:none;} }
+
+  .page-head{ text-align:center; max-width:480px; margin-bottom:28px; position:relative; z-index:2;}
+  .page-head .kicker{
+    font-size:12px; letter-spacing:0.25em; color:var(--amber); text-transform:uppercase;
+    margin:0 0 10px;
+  }
+  .page-head h1{
+    font-family:'Bebas Neue',sans-serif; font-size:clamp(28px,6vw,40px); letter-spacing:0.05em;
+    margin:0 0 10px; color:var(--cream);
+  }
+  .page-head p{ font-size:14px; color:var(--muted); line-height:1.7; margin:0; }
+
+  /* ---- CONTROLS ---- */
+  .controls{
+    width:100%; max-width:380px; position:relative; z-index:2;
+  }
+  .field{ margin-bottom:16px; }
+  .field label{
+    display:block; font-size:12px; letter-spacing:0.08em; color:var(--gold);
+    margin-bottom:6px; text-transform:uppercase;
+  }
+  .field input[type=text], .field textarea{
+    width:100%; background:#211B15; border:1px solid #3A3024; color:var(--cream);
+    border-radius:6px; padding:11px 12px; font-family:inherit; font-size:14px;
+    resize:none; outline:none;
+  }
+  .field input[type=text]:focus, .field textarea:focus{ border-color:var(--amber); }
+  .field textarea{ min-height:64px; }
+
+  .photo-picker{ display:flex; align-items:center; gap:14px; cursor:pointer; }
+  .photo-picker input[type=file]{ display:none; }
+  .photo-box{
+    width:64px; height:64px; flex:none; background:#cfc4ab; border-radius:8px;
+    overflow:hidden; display:flex; align-items:center; justify-content:center; position:relative;
+  }
+  .photo-box img{ width:100%; height:100%; object-fit:cover; display:none; }
+  .photo-placeholder svg{ width:24px; height:24px; opacity:0.6; display:block; }
+  .photo-picker-text{ font-size:13px; color:var(--muted); line-height:1.5; }
+  .photo-picker-text b{ display:block; color:var(--cream); font-weight:600; font-size:14px; }
+
+  .btn{
+    border:none; border-radius:6px; padding:13px 14px;
+    font-size:14px; font-weight:600; cursor:pointer; letter-spacing:0.02em;
+    font-family:inherit;
+  }
+  .btn-primary{ background:var(--amber); color:#241702; }
+  .btn-secondary{ background:transparent; border:1px solid var(--amber); color:var(--amber); }
+  .btn:active{ transform:scale(0.98); }
+  .btn:disabled{ opacity:0.6; cursor:default; }
+  .btn-full{ width:100%; }
+  .hint{ font-size:12px; color:var(--muted); margin-top:12px; line-height:1.6; text-align:center; }
+
+  /* ---- FINAL CARD: photo + story combined, 1536x912 ---- */
+  .card-section{ width:100%; margin-top:32px; position:relative; z-index:2; }
+  .card-caption{ text-align:center; font-size:11px; letter-spacing:0.3em; color:var(--gold); text-transform:uppercase; margin:0 0 12px; }
+  .final-outer{ position:relative; margin:0 auto; overflow:hidden; border-radius:18px; }
+  .final-card{
+    position:relative; width:1536px; height:912px; transform-origin:top left;
+    border-radius:18px; overflow:hidden; background:var(--bg-charcoal);
+    box-shadow:0 0 0 1px rgba(217,178,106,0.45), 0 0 40px rgba(232,163,61,0.25), 0 40px 90px rgba(0,0,0,0.6);
+    animation:cardGlow 4s ease-in-out infinite;
+  }
+  @keyframes cardGlow{
+    0%,100%{ box-shadow:0 0 0 1px rgba(217,178,106,0.45), 0 0 40px rgba(232,163,61,0.25), 0 40px 90px rgba(0,0,0,0.6); }
+    50%{ box-shadow:0 0 0 1px rgba(217,178,106,0.75), 0 0 95px rgba(232,163,61,0.55), 0 40px 90px rgba(0,0,0,0.6); }
+  }
+  .final-photo{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:none; }
+  .final-card.has-photo .final-photo{ display:block; }
+  .final-card:not(.has-photo){ background:radial-gradient(ellipse at 30% 40%, #2A2118, #0B0A08 70%); }
+  .final-overlay{
+    position:absolute; inset:0;
+    background:linear-gradient(100deg, rgba(11,10,8,0.97) 0%, rgba(11,10,8,0.84) 32%, rgba(11,10,8,0.35) 62%, rgba(11,10,8,0.05) 88%);
+  }
+  .final-shine{
+    position:absolute; top:-60%; left:-60%; width:35%; height:220%;
+    background:linear-gradient(75deg, transparent, rgba(255,235,190,0.30), transparent);
+    transform:rotate(15deg);
+    animation:shineSweep 7s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes shineSweep{
+    0%{ left:-60%; } 30%{ left:140%; } 100%{ left:140%; }
+  }
+
+  /* ---- FIREFLIES (minnaminungu) ---- */
+  .fireflies{ position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:3; }
+  .firefly{
+    position:absolute;
+    width:6px; height:6px;
+    border-radius:50%;
+    background:radial-gradient(circle, #FFF1C7 0%, var(--amber) 45%, rgba(232,163,61,0) 75%);
+    box-shadow:0 0 8px 2px rgba(232,163,61,0.9), 0 0 18px 6px rgba(232,163,61,0.4);
+    opacity:0;
+    animation-name:fireflyDrift, fireflyPulse;
+    animation-timing-function:ease-in-out, ease-in-out;
+    animation-iteration-count:infinite, infinite;
+  }
+  @keyframes fireflyPulse{
+    0%, 100%{ opacity:0; }
+    15%{ opacity:1; }
+    50%{ opacity:0.85; }
+    85%{ opacity:1; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .final-card, .final-shine, .firefly{ animation:none; }
+    .firefly{ opacity:0.6; }
+  }
+
+  .final-content{ position:absolute; left:64px; right:64px; bottom:56px; max-width:760px; z-index:4; }
+  .final-eyebrow{ font-size:18px; letter-spacing:0.3em; color:var(--amber); text-transform:uppercase; margin:0 0 16px; }
+  .final-name{
+    font-family:'Bebas Neue',sans-serif; font-weight:400; font-size:64px; letter-spacing:0.04em;
+    color:var(--gold); margin:0 0 20px; line-height:1.1;
+    text-shadow:0 0 26px rgba(232,163,61,0.5);
+  }
+  .final-story{
+    font-family:'EB Garamond', serif; font-style:italic; font-size:27px; line-height:1.65;
+    color:var(--cream); margin:0 0 26px;
+  }
+  .final-footer{ display:flex; align-items:center; gap:14px; font-size:14px; letter-spacing:0.18em; color:var(--muted); text-transform:uppercase; }
+  .final-dot{ width:9px; height:9px; border-radius:50%; background:var(--rust); flex:none; }
+  .final-brand{ margin-left:auto; opacity:0.55; }
+
+  .creator-credit{
+    position:absolute; right:18px; bottom:14px; z-index:6;
+    font-family:'Noto Sans Malayalam','Noto Sans',sans-serif;
+    font-size:13px; letter-spacing:0.04em; font-weight:500;
+    color:var(--gold); opacity:0.7;
+    text-shadow:0 1px 3px rgba(0,0,0,0.6);
+    pointer-events:none;
+  }
+  .card-actions{ display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; max-width:560px; margin-left:auto; margin-right:auto; }
+  .card-actions .btn{ flex:1; min-width:140px; }
+
+  /* ---- PAYMENT PANEL ---- */
+  .pay-panel{
+    width:100%; max-width:380px; margin-top:8px; margin-bottom:8px;
+    background:#1A1510; border:1px solid #3A3024; border-radius:10px;
+    padding:16px; position:relative; z-index:2;
+  }
+  .pay-panel h3{
+    font-size:13px; letter-spacing:0.1em; color:var(--gold); text-transform:uppercase;
+    margin:0 0 10px; font-weight:600;
+  }
+  .pay-amount{ font-size:13px; color:var(--muted); margin:0 0 14px; line-height:1.6; }
+  .pay-amount b{ color:var(--amber); }
+  .pay-status{
+    font-size:12px; margin-top:10px; line-height:1.6; min-height:1px;
+  }
+  .pay-status.ok{ color:#7FBF7F; }
+  .pay-status.err{ color:#E08566; }
+  .pay-status.pending{ color:var(--muted); }
+  .pay-mobile-hint{ font-size:11px; color:var(--muted); line-height:1.6; margin:10px 0 0; }
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+
+<div class="page-head">
+  <p class="kicker">Father's Day · June 21, 2026</p>
+  <h1>MEMORY REEL</h1>
+  <p>Add your father's name, a photo, and a memory. One tap turns it into a single glowing story card you can share on Twitter.</p>
+</div>
+
+<div class="controls">
+  <div class="field">
+    <label for="nameInput">Father's name</label>
+    <input type="text" id="nameInput" placeholder="e.g. Dad / Papa / Appa">
+  </div>
+
+  <div class="field">
+    <label>Photo</label>
+    <label class="photo-picker" for="photoInput">
+      <div class="photo-box">
+        <img id="photoImg" alt="">
+        <div class="photo-placeholder" id="photoPlaceholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#6c6350" stroke-width="1.6"><rect x="3" y="6" width="18" height="13" rx="2"/><circle cx="12" cy="12.5" r="3.4"/><path d="M8 6l1.2-2h5.6L16 6"/></svg>
+        </div>
+      </div>
+      <span class="photo-picker-text"><b>Add a photo</b>Tap to choose one from your device</span>
+      <input type="file" id="photoInput" accept="image/*">
+    </label>
+  </div>
+
+  <div class="field">
+    <label for="msgInput">A word / memory</label>
+    <textarea id="msgInput" placeholder="e.g. You showed me the first path, I still remember it"></textarea>
+  </div>
+
+  <div class="pay-panel" id="payPanel">
+    <h3>Pay with USDC on Base</h3>
+    <p class="pay-amount">One tap: connect your wallet, send <b>0.05 USDC</b> on <b>Base</b>, and the story unlocks automatically once it confirms.</p>
+    <button class="btn btn-primary btn-full" id="payBtn" type="button">Connect Wallet &amp; Pay 0.05 USDC</button>
+    <p class="pay-status" id="payStatus"></p>
+    <p class="pay-mobile-hint" id="payMobileHint" style="display:none;">On a phone? Open this page inside your wallet app's built-in browser (e.g. Trust Wallet, Coinbase Wallet, MetaMask app) so it can detect your wallet — a regular mobile browser like Safari/Chrome won't see it.</p>
+  </div>
+
+  <button class="btn btn-primary btn-full" id="generateBtn" disabled style="display:none;">Write the story &amp; create the card</button>
+  <p class="hint" id="generateHint">Pay 0.05 USDC above to unlock story generation.</p>
+</div>
+
+<div class="card-section" id="finalWrap" style="display:none;">
+  <p class="card-caption">Your card · 1536×912</p>
+  <div class="final-outer" id="finalOuter">
+    <div class="final-card" id="finalCard">
+      <img id="finalPhoto" class="final-photo" alt="">
+      <div class="final-overlay"></div>
+      <div class="final-shine"></div>
+      <div class="fireflies" id="fireflies"></div>
+      <div class="final-content">
+        <p class="final-eyebrow">Father's Day · June 21, 2026</p>
+        <h2 class="final-name" id="finalName">Dad</h2>
+        <p class="final-story" id="finalStory">Writing the story…</p>
+        <div class="final-footer">
+          <span class="final-dot"></span>
+          <span>#FathersDay2026</span>
+          <span class="final-brand">Memory Reel</span>
+        </div>
+      </div>
+      <div class="creator-credit">@KeonHD_X</div>
+    </div>
+  </div>
+  <div class="card-actions">
+    <button class="btn btn-primary" id="downloadFinalBtn">Download</button>
+    <button class="btn btn-secondary" id="tweetFinalBtn">Tweet it</button>
+  </div>
+  <p class="hint">On phones, "Tweet it" opens the share sheet with the image already attached. On desktop, it downloads the image and opens Twitter — attach it there.</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const nameInput = document.getElementById('nameInput');
+  const msgInput = document.getElementById('msgInput');
+  const photoInput = document.getElementById('photoInput');
+  const photoImg = document.getElementById('photoImg');
+  const photoPlaceholder = document.getElementById('photoPlaceholder');
+  const generateBtn = document.getElementById('generateBtn');
+  const generateHint = document.getElementById('generateHint');
+  const payBtn = document.getElementById('payBtn');
+  const payStatus = document.getElementById('payStatus');
+  const payPanel = document.getElementById('payPanel');
+  const payMobileHint = document.getElementById('payMobileHint');
+  const finalWrap = document.getElementById('finalWrap');
+  const finalOuter = document.getElementById('finalOuter');
+  const finalCard = document.getElementById('finalCard');
+  const finalPhoto = document.getElementById('finalPhoto');
+  const finalName = document.getElementById('finalName');
+  const finalStory = document.getElementById('finalStory');
+  const firefliesEl = document.getElementById('fireflies');
+  const CARD_W = 1536, CARD_H = 912;
+
+  // ---- Fireflies: random floating sparks, generated once on load ----
+  function spawnFireflies(count = 16) {
+    firefliesEl.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+      const f = document.createElement('div');
+      f.className = 'firefly';
+
+      const startX = Math.random() * 100;
+      const startY = Math.random() * 100;
+      const driftX1 = (Math.random() * 160 - 80);
+      const driftY1 = (Math.random() * 140 - 100);
+      const driftX2 = (Math.random() * 200 - 100);
+      const driftY2 = (Math.random() * 160 - 120);
+      const size = 4 + Math.random() * 5;
+      const driftDur = 9 + Math.random() * 10;
+      const pulseDur = 2.5 + Math.random() * 3;
+      const delay = -(Math.random() * driftDur);
+
+      f.style.left = startX + '%';
+      f.style.top = startY + '%';
+      f.style.width = size + 'px';
+      f.style.height = size + 'px';
+      f.style.setProperty('--dx1', driftX1 + 'px');
+      f.style.setProperty('--dy1', driftY1 + 'px');
+      f.style.setProperty('--dx2', driftX2 + 'px');
+      f.style.setProperty('--dy2', driftY2 + 'px');
+      f.style.animationDuration = `${driftDur}s, ${pulseDur}s`;
+      f.style.animationDelay = `${delay}s, ${delay}s`;
+
+      // unique drift keyframes per firefly (since CSS vars can't drive @keyframes directly)
+      const styleTag = document.createElement('style');
+      const animName = `drift-${i}-${Math.floor(Math.random()*100000)}`;
+      styleTag.textContent = `
+        @keyframes ${animName} {
+          0%   { transform: translate(0, 0); }
+          33%  { transform: translate(${driftX1}px, ${driftY1}px); }
+          66%  { transform: translate(${driftX2}px, ${driftY2}px); }
+          100% { transform: translate(0, 0); }
+        }
+      `;
+      document.head.appendChild(styleTag);
+      f.style.animationName = `${animName}, fireflyPulse`;
+
+      firefliesEl.appendChild(f);
+    }
+  }
+  spawnFireflies();
+
+  photoInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      photoImg.src = ev.target.result;
+      photoImg.style.display = 'block';
+      photoPlaceholder.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function canvasToBlob(canvas) {
+    return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+  }
+
+  function layoutFinalCard() {
+    const available = Math.min(560, window.innerWidth - 32);
+    const scale = available / CARD_W;
+    finalCard.style.transform = `scale(${scale})`;
+    finalOuter.style.width = (CARD_W * scale) + 'px';
+    finalOuter.style.height = (CARD_H * scale) + 'px';
+  }
+  window.addEventListener('resize', layoutFinalCard);
+
+  async function exportFinalCard() {
+    const prevTransform = finalCard.style.transform;
+    finalCard.style.transform = 'none';
+    await new Promise((r) => requestAnimationFrame(r));
+    const canvas = await html2canvas(finalCard, {
+      width: CARD_W, height: CARD_H, windowWidth: CARD_W, windowHeight: CARD_H,
+      backgroundColor: '#0B0A08', scale: 1, useCORS: true
+    });
+    finalCard.style.transform = prevTransform;
+    return canvas;
+  }
+
+  function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  // ---- Payment config (mirrors the server-side checks in api/verify-payment.js) ----
+  const BASE_CHAIN_ID_HEX = '0x2105'; // 8453 in hex
+  const USDC_CONTRACT = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'; // native USDC on Base
+  const RECEIVER_WALLET = '0xBc7a2123F1148B67aA7fdD1D2faEA1a88CE8955f';
+  const USDC_AMOUNT_UNITS = (0.05 * 1e6).toString(16); // 0.05 USDC, 6 decimals, as hex
+
+  let paymentToken = null;
+
+  function isMobileBrowser() {
+    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  }
+
+  function hasInjectedWallet() {
+    return typeof window.ethereum !== 'undefined';
+  }
+
+  function encodeErc20Transfer(toAddress, amountUnitsHex) {
+    // ERC-20 transfer(address,uint256) function selector: 0xa9059cbb
+    const selector = 'a9059cbb';
+    const addrParam = toAddress.replace(/^0x/, '').toLowerCase().padStart(64, '0');
+    const amountParam = amountUnitsHex.padStart(64, '0');
+    return '0x' + selector + addrParam + amountParam;
+  }
+
+  async function ensureBaseNetwork(ethereum) {
+    const currentChainId = await ethereum.request({ method: 'eth_chainId' });
+    if (currentChainId.toLowerCase() === BASE_CHAIN_ID_HEX) return;
+
+    try {
+      await ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: BASE_CHAIN_ID_HEX }]
+      });
+    } catch (switchErr) {
+      // Chain not added to the wallet yet — try adding it
+      if (switchErr && switchErr.code === 4902) {
+        await ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [{
+            chainId: BASE_CHAIN_ID_HEX,
+            chainName: 'Base',
+            nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+            rpcUrls: ['https://mainnet.base.org'],
+            blockExplorerUrls: ['https://basescan.org']
+          }]
+        });
+      } else {
+        throw switchErr;
+      }
+    }
+  }
+
+  async function verifyPaymentOnServer(txHash) {
+    const response = await fetch('/api/verify-payment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ txHash })
+    });
+    return { status: response.status, data: await response.json() };
+  }
+
+  function setPayStatus(text, kind) {
+    payStatus.className = 'pay-status' + (kind ? ' ' + kind : '');
+    payStatus.innerHTML = text;
+  }
+
+  // ---- Main action: connect wallet, send USDC, verify, auto-generate ----
+  payBtn.addEventListener('click', async () => {
+    if (!hasInjectedWallet()) {
+      if (isMobileBrowser()) {
+        payMobileHint.style.display = 'block';
+        setPayStatus('No wallet found in this browser.', 'err');
+      } else {
+        setPayStatus('No wallet extension found. Please install MetaMask (or another browser wallet) and try again.', 'err');
+      }
+      return;
+    }
+
+    const ethereum = window.ethereum;
+    const originalLabel = payBtn.textContent;
+    payBtn.disabled = true;
+
+    try {
+      // 1) Connect
+      payBtn.textContent = 'Connecting wallet…';
+      setPayStatus('Opening your wallet to connect…', 'pending');
+      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+      if (!accounts || !accounts.length) throw new Error('No account returned from wallet.');
+      const fromAddress = accounts[0];
+
+      // 2) Make sure we're on Base
+      payBtn.textContent = 'Switching to Base…';
+      setPayStatus('Making sure your wallet is on the Base network…', 'pending');
+      await ensureBaseNetwork(ethereum);
+
+      // 3) Send the USDC transfer — this triggers the wallet's confirm popup
+      payBtn.textContent = 'Confirm in your wallet…';
+      setPayStatus('Check your wallet — confirm the 0.05 USDC payment.', 'pending');
+      const data = encodeErc20Transfer(RECEIVER_WALLET, USDC_AMOUNT_UNITS);
+      const txHash = await ethereum.request({
+        method: 'eth_sendTransaction',
+        params: [{ from: fromAddress, to: USDC_CONTRACT, data }]
+      });
+
+      // 4) Wait for it to confirm, then verify with our server
+      payBtn.textContent = 'Confirming on-chain…';
+      setPayStatus('Payment sent — waiting for it to confirm on Base…', 'pending');
+
+      let verified = null;
+      for (let attempt = 0; attempt < 10; attempt++) {
+        await new Promise((r) => setTimeout(r, 3000));
+        const result = await verifyPaymentOnServer(txHash);
+        if (result.data && result.data.ok) {
+          verified = result.data;
+          break;
+        }
+        // 404 just means "not mined yet" — keep polling. Any other error, stop and show it.
+        if (result.status !== 404) {
+          setPayStatus(result.data.error || 'Could not verify the payment.', 'err');
+          payBtn.disabled = false;
+          payBtn.textContent = originalLabel;
+          return;
+        }
+        setPayStatus('Still confirming… (' + (attempt + 1) + '/10)', 'pending');
+      }
+
+      if (!verified) {
+        setPayStatus('The transaction is taking longer than expected to confirm. It may still go through — check Basescan, or try again.', 'err');
+        payBtn.disabled = false;
+        payBtn.textContent = originalLabel;
+        return;
+      }
+
+      // 5) Payment verified — auto-generate the story
+      paymentToken = verified.token;
+      setPayStatus('✓ Payment confirmed (' + verified.amount + ' USDC). Writing your story…', 'ok');
+      payBtn.textContent = 'Paid ✓';
+      await generateStory();
+    } catch (err) {
+      const message = (err && err.code === 4001) ? 'Payment was cancelled in your wallet.' : 'Something went wrong with the payment. Please try again.';
+      setPayStatus(message, 'err');
+      payBtn.disabled = false;
+      payBtn.textContent = originalLabel;
+    }
+  });
+
+  // ---- Story generation, now triggered automatically after a verified payment ----
+  async function generateStory() {
+    const name = nameInput.value.trim() || 'Dad';
+
+    finalName.textContent = name;
+    if (photoImg.style.display === 'block' && photoImg.src) {
+      finalPhoto.src = photoImg.src;
+      finalCard.classList.add('has-photo');
+    } else {
+      finalCard.classList.remove('has-photo');
+    }
+
+    finalWrap.style.display = 'block';
+    layoutFinalCard();
+    finalWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    finalStory.textContent = 'Writing the story…';
+
+    try {
+      const response = await fetch("/api/generate-story", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, paymentToken })
+      });
+      const data = await response.json();
+
+      if (response.status === 402) {
+        finalStory.textContent = data.error || 'Payment proof expired. Please pay again.';
+        paymentToken = null;
+        setPayStatus('Payment proof expired — please pay again to generate another story.', 'err');
+        payBtn.disabled = false;
+        payBtn.textContent = 'Connect Wallet & Pay 0.05 USDC';
+        return;
+      }
+
+      finalStory.textContent = data.story || data.error || 'Could not write the story right now. Please try again.';
+
+      // Each verified payment unlocks exactly one story generation.
+      paymentToken = null;
+      setPayStatus('Story generated! Pay again to create another card.', 'ok');
+      payBtn.disabled = false;
+      payBtn.textContent = 'Connect Wallet & Pay 0.05 USDC';
+    } catch (err) {
+      finalStory.textContent = 'Something went wrong writing the story. Please try again.';
+      payBtn.disabled = false;
+      payBtn.textContent = 'Connect Wallet & Pay 0.05 USDC';
+    }
+  }
+
+  document.getElementById('downloadFinalBtn').addEventListener('click', async (e) => {
+    const button = e.currentTarget;
+    const original = button.textContent;
+    button.disabled = true;
+    button.textContent = 'Preparing…';
+    try {
+      const canvas = await exportFinalCard();
+      const link = document.createElement('a');
+      link.download = 'memory-reel-card.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } finally {
+      button.disabled = false;
+      button.textContent = original;
+    }
+  });
+
+  document.getElementById('tweetFinalBtn').addEventListener('click', async (e) => {
+    const button = e.currentTarget;
+    const original = button.textContent;
+    const name = nameInput.value.trim() || 'Dad';
+    const text = `${name} — Happy Father's Day! 🎬\n#FathersDay2026`;
+    button.disabled = true;
+    button.textContent = 'Preparing…';
+    try {
+      const canvas = await exportFinalCard();
+      const blob = await canvasToBlob(canvas);
+      const file = new File([blob], 'memory-reel-card.png', { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], text });
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+      const link = document.createElement('a');
+      link.download = 'memory-reel-card.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
+    } finally {
+      button.disabled = false;
+      button.textContent = original;
+    }
+  });
+});
+</script>
+
+</body>
+</html>
